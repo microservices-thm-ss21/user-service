@@ -15,8 +15,8 @@ services:
     networks:
       - database
 
-  template-service:
-    image: template-service
+  user-service:
+    image: user-service
     build:
       context: ./
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - /data/template-service
+      - /data/user-service
     networks:
       - database
       - network
