@@ -1,24 +1,25 @@
-package de.thm.mni.microservices.gruppe6.template.controller
+package de.thm.mni.microservices.gruppe6.user.controller
 
-import de.thm.mni.microservices.gruppe6.template.model.persistence.User
-import de.thm.mni.microservices.gruppe6.template.model.message.UserDTO
-import de.thm.mni.microservices.gruppe6.template.service.UserDbService
+import de.thm.mni.microservices.gruppe6.user.model.persistence.User
+import de.thm.mni.microservices.gruppe6.user.model.message.UserDTO
+import de.thm.mni.microservices.gruppe6.user.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/users")
-class UserController(@Autowired val userService: UserDbService) {
+class UserController(@Autowired val userService: UserService) {
 
-    @GetMapping("/")
+    @GetMapping("")
     fun getAllUsers(): Flux<User> = userService.getAllUsers()
 
-    @PutMapping("/")
+    @PostMapping("")
     fun putUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.putUser(userDTO)
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     fun updateUser(@PathVariable id: Long, @RequestBody userDTO: UserDTO) = userService.updateUser(id, userDTO)
 
     @DeleteMapping("/{id}")

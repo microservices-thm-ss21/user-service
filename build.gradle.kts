@@ -24,6 +24,7 @@ repositories {
 extra["springBootAdminVersion"] = "2.3.1"
 
 dependencies {
+    implementation("de.thm.mni.microservices.gruppe6:service-lib:1.0-SNAPSHOT")
     implementation("org.springframework.boot:spring-boot-starter-activemq")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")

@@ -1,11 +1,11 @@
-package de.thm.mni.microservices.gruppe6.template
+package de.thm.mni.microservices.gruppe6.user
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class TemplateServiceApplication
+class UserServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<TemplateServiceApplication>(*args)
+    runApplication<UserServiceApplication>(*args)
 }
