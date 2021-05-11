@@ -21,7 +21,7 @@ class UserService(@Autowired val userRepo: UserRepository) {
 
     fun updateUser(id: Long, userDTO: UserDTO): Mono<User> {
         val user = userRepo.findById(id)
-        return user.map { it.applyUserDTO(userDTO) }
+        return user.flatMap { userRepo.save(it.applyUserDTO(userDTO)) }
     }
 
     fun deleteUser(id: Long): Mono<Void> {
