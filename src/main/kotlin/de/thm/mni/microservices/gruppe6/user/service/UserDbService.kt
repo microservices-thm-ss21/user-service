@@ -55,7 +55,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.username != userDTO.username!!){
             eventList.add(DomainEventChangedString(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_USERNAME,
                 this.id!!,
                 this.username,
                 userDTO.username))
@@ -64,7 +64,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.lastName != userDTO.lastName!!){
             eventList.add(DomainEventChangedString(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_LASTNAME,
                 this.id!!,
                 this.lastName,
                 userDTO.lastName))
@@ -73,7 +73,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.name != userDTO.name!!){
             eventList.add(DomainEventChangedString(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_NAME,
                 this.id!!,
                 this.name,
                 userDTO.name))
@@ -82,7 +82,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.email != userDTO.email!!){
             eventList.add(DomainEventChangedString(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_EMAIL,
                 this.id!!,
                 this.email,
                 userDTO.email))
@@ -91,7 +91,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.dateOfBirth != userDTO.dateOfBirth!!){
             eventList.add(DomainEventChangedDate(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_DATEOFBIRTH,
                 this.id!!,
                 this.dateOfBirth,
                 userDTO.dateOfBirth))
@@ -100,7 +100,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
         if(this.globalRole != userDTO.globalRole!!){
             eventList.add(DomainEventChangedString(
-                DomainEventCode.ISSUE_CHANGED_MESSAGE,
+                DomainEventCode.USER_CHANGED_GLOBALROLE,
                 this.id!!,
                 this.globalRole,
                 userDTO.globalRole))
