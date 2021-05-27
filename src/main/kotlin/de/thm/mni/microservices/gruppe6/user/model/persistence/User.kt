@@ -13,6 +13,7 @@ data class User(
     var username: String,
     var name: String,
     var lastName: String,
+    var email: String,
     var dateOfBirth: LocalDate,
     var createTime: LocalDateTime,
     var globalRole: String,
@@ -23,6 +24,7 @@ data class User(
         ,userDTO.username!!
         ,userDTO.name!!
         ,userDTO.lastName!!
+        ,userDTO.email!!
         ,userDTO.dateOfBirth!!
         ,LocalDateTime.now()
         ,userDTO.globalRole!!

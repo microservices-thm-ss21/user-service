@@ -10,6 +10,7 @@ class UserDTO {
     var username: String? = null
     var name: String? = null
     var lastName: String? = null
+    var email: String? = null
     @JsonFormat(pattern = "dd.MM.yyyy")
     var dateOfBirth: LocalDate? = null
     var globalRole: String? = null
