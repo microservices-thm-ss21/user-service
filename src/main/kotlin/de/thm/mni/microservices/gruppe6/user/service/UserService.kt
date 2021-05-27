@@ -7,25 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.*
 
 @Component
 class UserService(@Autowired val userRepo: UserRepository) {
 
-    private var nextId: Long = 0
-
     fun getAllUsers(): Flux<User> = userRepo.findAll()
 
     fun putUser(userDTO: UserDTO): Mono<User> {
-        return userRepo.save(User(nextId++, userDTO))
+        return userRepo.save(User(userDTO))
     }
 
-    fun updateUser(id: Long, userDTO: UserDTO): Mono<User> {
-        val user = userRepo.findById(id)
+    fun updateUser(userId: UUID, userDTO: UserDTO): Mono<User> {
+        val user = userRepo.findById(userId)
         return user.flatMap { userRepo.save(it.applyUserDTO(userDTO)) }
     }
 
-    fun deleteUser(id: Long): Mono<Void> {
-        return userRepo.deleteById(id)
+    fun deleteUser(userId: UUID): Mono<Void> {
+        return userRepo.deleteById(userId)
     }
 
     fun User.applyUserDTO(userDTO: UserDTO): User {

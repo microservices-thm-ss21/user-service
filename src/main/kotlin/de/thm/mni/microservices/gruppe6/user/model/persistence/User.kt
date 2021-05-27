@@ -5,10 +5,11 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 @Table("users")
 data class User(
-    @Id var id: Long? = null,
+    @Id var id: UUID? = null,
     var username: String,
     var name: String,
     var lastName: String,
@@ -17,8 +18,8 @@ data class User(
     var globalRole: String,
     var lastLogin: LocalDateTime?
 ) {
-    constructor(id: Long, userDTO: UserDTO): this(
-         id
+    constructor(userDTO: UserDTO): this(
+         null
         ,userDTO.username!!
         ,userDTO.name!!
         ,userDTO.lastName!!
