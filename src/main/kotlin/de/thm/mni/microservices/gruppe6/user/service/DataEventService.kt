@@ -7,6 +7,8 @@ import reactor.core.publisher.Mono
 
 @Service
 class DataEventService(
+    @Autowired val issueDbService: IssueDbService,
+    @Autowired val projectDbService: ProjectDbService,
     @Autowired val userDbService: UserDbService, // Included to maintain consistency
 ) {
 
@@ -15,7 +17,9 @@ class DataEventService(
 
         dataEvent.subscribe {
             when (it) {
-                is UserDbService -> {/* Do nothing with own events */ }
+                is IssueDataEvent -> issueDbService.receiveUpdate(it)
+                is ProjectDbService -> projectDbService.receiveUpdate(it)
+                is UserDataEvent -> {/* Do nothing with own events */ }
                 else -> error("Unexpected Event type: ${it?.javaClass}")
             }
         }

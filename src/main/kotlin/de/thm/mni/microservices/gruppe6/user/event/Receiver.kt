@@ -31,7 +31,7 @@ class Receiver(private val dataEventService: DataEventService) {
                 is DomainEvent -> {
                     logger.debug("Received DomainEvent Object Message with code {}", payload.code)
                     /** Do nothing for now / forever with domain events
-                     * No use within issue service */
+                     * No use within user service */
                 }
                 else -> {
                     logger.error(
