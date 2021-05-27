@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class UserService(@Autowired val userRepo: UserRepository) {
+class UserDbService(@Autowired val userRepo: UserRepository) {
 
     fun getAllUsers(): Flux<User> = userRepo.findAll()
 

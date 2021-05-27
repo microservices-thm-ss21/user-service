@@ -2,9 +2,8 @@ package de.thm.mni.microservices.gruppe6.user.controller
 
 import de.thm.mni.microservices.gruppe6.user.model.persistence.User
 import de.thm.mni.microservices.gruppe6.user.model.message.UserDTO
-import de.thm.mni.microservices.gruppe6.user.service.UserService
+import de.thm.mni.microservices.gruppe6.user.service.UserDbService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -12,7 +11,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/users")
-class UserController(@Autowired val userService: UserService) {
+class UserController(@Autowired val userService: UserDbService) {
 
     @GetMapping("")
     fun getAllUsers(): Flux<User> = userService.getAllUsers()
