@@ -17,7 +17,7 @@ class UserController(@Autowired val userService: UserDbService) {
     fun getAllUsers(): Flux<User> = userService.getAllUsers()
 
     @PostMapping("")
-    fun putUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.putUser(userDTO)
+    fun putUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.createUser(userDTO)
 
     @PutMapping("/{id}")
     fun updateUser(@PathVariable id: UUID, @RequestBody userDTO: UserDTO) = userService.updateUser(id, userDTO)
