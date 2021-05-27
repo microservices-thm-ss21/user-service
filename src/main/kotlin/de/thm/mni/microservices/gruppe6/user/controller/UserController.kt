@@ -1,9 +1,11 @@
 package de.thm.mni.microservices.gruppe6.user.controller
 
+import de.thm.mni.microservices.gruppe6.lib.exception.ServiceException
 import de.thm.mni.microservices.gruppe6.user.model.persistence.User
 import de.thm.mni.microservices.gruppe6.user.model.message.UserDTO
 import de.thm.mni.microservices.gruppe6.user.service.UserDbService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -17,11 +19,17 @@ class UserController(@Autowired val userService: UserDbService) {
     fun getAllUsers(): Flux<User> = userService.getAllUsers()
 
     @PostMapping("")
-    fun putUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.createUser(userDTO)
+    fun createUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.createUser(userDTO)
+        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
 
-    @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: UUID, @RequestBody userDTO: UserDTO) = userService.updateUser(id, userDTO)
+    @GetMapping("{userId}")
+    fun getUser(@PathVariable userId: UUID): Mono<User> =
+        userService.getUser(userId).switchIfEmpty(Mono.error(ServiceException(HttpStatus.NOT_FOUND)))
 
-    @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: UUID) = userService.deleteUser(id)
+    @PutMapping("/{userId}")
+    fun updateUser(@PathVariable userId: UUID, @RequestBody userDTO: UserDTO): Mono<User> = userService.updateUser(userId, userDTO)
+        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
+
+    @DeleteMapping("/{userId}")
+    fun deleteUser(@PathVariable userId: UUID) = userService.deleteUser(userId)
 }
