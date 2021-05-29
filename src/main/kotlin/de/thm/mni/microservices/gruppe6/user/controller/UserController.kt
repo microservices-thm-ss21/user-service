@@ -19,6 +19,7 @@ class UserController(@Autowired val userService: UserDbService) {
     fun getAllUsers(): Flux<User> = userService.getAllUsers()
 
     @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.createUser(userDTO)
         .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
 
@@ -31,5 +32,6 @@ class UserController(@Autowired val userService: UserDbService) {
         .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
 
     @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteUser(@PathVariable userId: UUID) = userService.deleteUser(userId)
 }
