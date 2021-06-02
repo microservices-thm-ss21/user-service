@@ -17,7 +17,7 @@ create table users (
     date_of_birth date,
     create_time timestamp,
     global_role varchar(20),
-    last_login timestamp null,
+    last_login timestamp null
 );
 
 
