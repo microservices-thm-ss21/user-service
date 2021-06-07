@@ -1,4 +1,4 @@
-package de.thm.mni.microservices.gruppe6.issue.event
+package de.thm.mni.microservices.gruppe6.user.event
 
 import org.apache.activemq.ActiveMQConnectionFactory
 import org.springframework.beans.factory.annotation.Value
@@ -11,7 +11,6 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageConverter
 import org.springframework.jms.support.converter.MessageType
 
-
 @Configuration
 @EnableJms
 class BrokerConfig{
@@ -20,7 +19,6 @@ class BrokerConfig{
     fun jmsListenerContainerFactory(activeMQConnectionFactory: ActiveMQConnectionFactory): DefaultJmsListenerContainerFactory {
         val factory = DefaultJmsListenerContainerFactory()
         factory.setPubSubDomain(true)
-        activeMQConnectionFactory.trustedPackages = listOf("de.thm.mni.microservices.gruppe6.lib.event", "java.util")
         factory.setConnectionFactory(activeMQConnectionFactory)
         factory.setMessageConverter(jacksonJmsMessageConverter())
         return factory
@@ -44,6 +42,8 @@ class BrokerConfig{
 
     @Bean
     fun activeMQConnectionFactory(@Value("\${spring.activemq.broker-url}") brokerUrl: String?): ActiveMQConnectionFactory? {
-        return ActiveMQConnectionFactory(brokerUrl)
+        val activeMQConnectionFactory = ActiveMQConnectionFactory(brokerUrl)
+        activeMQConnectionFactory.trustedPackages = listOf("de.thm.mni.microservices", "java.util", "java.time")
+        return activeMQConnectionFactory
     }
 }
