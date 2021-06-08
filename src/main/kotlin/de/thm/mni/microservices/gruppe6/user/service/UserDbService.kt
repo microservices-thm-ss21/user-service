@@ -24,7 +24,9 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun createUser(userDTO: UserDTO): Mono<User> {
         return Mono.just(userDTO).map { User(it) }.flatMap { userRepo.save(it) }
             .publishOn(Schedulers.boundedElastic()).map {
-                sender.convertAndSend(UserDataEvent(DataEventCode.CREATED, it.id!!))
+                sender.convertAndSend(
+                    EventTopic.DataEvents.topic,
+                    UserDataEvent(DataEventCode.CREATED, it.id!!))
                 it
             }
     }
@@ -36,8 +38,10 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
                 it
             }
             .publishOn(Schedulers.boundedElastic()).map {
-                sender.convertAndSend(UserDataEvent(DataEventCode.UPDATED, userId))
-                it.second.forEach(sender::convertAndSend)
+                sender.convertAndSend(
+                    EventTopic.DataEvents.topic,
+                    UserDataEvent(DataEventCode.UPDATED, userId))
+                it.second.forEach {(topic, event) -> sender.convertAndSend(topic, event) }
                 it.first
             }
     }
@@ -45,65 +49,85 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun deleteUser(userId: UUID): Mono<Void> {
         return userRepo.deleteById(userId)
             .publishOn(Schedulers.boundedElastic()).map {
-                sender.convertAndSend(UserDataEvent(DataEventCode.DELETED, userId))
+                sender.convertAndSend(
+                    EventTopic.DataEvents.topic,
+                    UserDataEvent(DataEventCode.DELETED, userId))
                 it
             }
     }
 
-    fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<DomainEvent>> {
-        val eventList = ArrayList<DomainEvent>()
+    fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<Pair<String,DomainEvent>>> {
+        val eventList = ArrayList<Pair<String,DomainEvent>>()
 
         if(this.username != userDTO.username!!){
-            eventList.add(DomainEventChangedString(
-                DomainEventCode.USER_CHANGED_USERNAME,
-                this.id!!,
-                this.username,
-                userDTO.username))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedString(
+                        DomainEventCode.USER_CHANGED_USERNAME,
+                        this.id!!,
+                        this.username,
+                        userDTO.username))
+            )
             this.username = userDTO.username!!
         }
 
         if(this.lastName != userDTO.lastName!!){
-            eventList.add(DomainEventChangedString(
-                DomainEventCode.USER_CHANGED_LASTNAME,
-                this.id!!,
-                this.lastName,
-                userDTO.lastName))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedString(
+                        DomainEventCode.USER_CHANGED_LASTNAME,
+                        this.id!!,
+                        this.lastName,
+                        userDTO.lastName))
+            )
             this.lastName = userDTO.lastName!!
         }
 
         if(this.name != userDTO.name!!){
-            eventList.add(DomainEventChangedString(
-                DomainEventCode.USER_CHANGED_NAME,
-                this.id!!,
-                this.name,
-                userDTO.name))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedString(
+                        DomainEventCode.USER_CHANGED_NAME,
+                        this.id!!,
+                        this.name,
+                        userDTO.name))
+            )
             this.name = userDTO.name!!
         }
 
         if(this.email != userDTO.email!!){
-            eventList.add(DomainEventChangedString(
-                DomainEventCode.USER_CHANGED_EMAIL,
-                this.id!!,
-                this.email,
-                userDTO.email))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedString(
+                        DomainEventCode.USER_CHANGED_EMAIL,
+                        this.id!!,
+                        this.email,
+                        userDTO.email))
+            )
             this.email = userDTO.email!!
         }
 
         if(this.dateOfBirth != userDTO.dateOfBirth!!){
-            eventList.add(DomainEventChangedDate(
-                DomainEventCode.USER_CHANGED_DATEOFBIRTH,
-                this.id!!,
-                this.dateOfBirth,
-                userDTO.dateOfBirth))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedDate(
+                        DomainEventCode.USER_CHANGED_DATEOFBIRTH,
+                        this.id!!,
+                        this.dateOfBirth,
+                        userDTO.dateOfBirth))
+            )
             this.dateOfBirth = userDTO.dateOfBirth!!
         }
 
         if(this.globalRole != userDTO.globalRole!!){
-            eventList.add(DomainEventChangedString(
-                DomainEventCode.USER_CHANGED_GLOBALROLE,
-                this.id!!,
-                this.globalRole,
-                userDTO.globalRole))
+            eventList.add(
+                Pair(EventTopic.DomainEvents_UserService.topic,
+                    DomainEventChangedString(
+                        DomainEventCode.USER_CHANGED_GLOBALROLE,
+                        this.id!!,
+                        this.globalRole,
+                        userDTO.globalRole))
+            )
             this.globalRole = userDTO.globalRole!!
         }
 
