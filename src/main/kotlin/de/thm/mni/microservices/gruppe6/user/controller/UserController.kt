@@ -21,7 +21,7 @@ class UserController(@Autowired val userService: UserDbService) {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody userDTO: UserDTO): Mono<User> = userService.createUser(userDTO)
-        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
+        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, cause = it)) }
 
     @GetMapping("{userId}")
     fun getUser(@PathVariable userId: UUID): Mono<User> =
@@ -29,7 +29,7 @@ class UserController(@Autowired val userService: UserDbService) {
 
     @PutMapping("/{userId}")
     fun updateUser(@PathVariable userId: UUID, @RequestBody userDTO: UserDTO): Mono<User> = userService.updateUser(userId, userDTO)
-        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, it)) }
+        .onErrorResume { Mono.error(ServiceException(HttpStatus.CONFLICT, cause = it)) }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
