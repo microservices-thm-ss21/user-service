@@ -201,5 +201,6 @@ components:
           dateOfBirth:
             type: string
             format: date
+            example: 05.05.2005
           globalRole:
             type: string

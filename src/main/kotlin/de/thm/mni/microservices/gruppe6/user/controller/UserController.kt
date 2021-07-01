@@ -13,6 +13,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin
 class UserController(@Autowired val userService: UserDbService) {
 
     @GetMapping("")
