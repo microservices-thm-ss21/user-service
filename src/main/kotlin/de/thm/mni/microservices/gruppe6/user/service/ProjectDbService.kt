@@ -20,8 +20,8 @@ class ProjectDbService(@Autowired val projectRepo: ProjectRepository) {
 
     fun receiveUpdate(projectDataEvent: ProjectDataEvent) {
         when (projectDataEvent.code){
-            CREATED -> projectRepo.save(Project(projectDataEvent.id))
-            DELETED -> projectRepo.deleteById(projectDataEvent.id)
+            CREATED -> projectRepo.saveProject(projectDataEvent.id).subscribe()
+            DELETED -> projectRepo.deleteById(projectDataEvent.id).subscribe()
             UPDATED -> {}
             else -> throw IllegalArgumentException("Unexpected code for projectEvent: ${projectDataEvent.code}")
         }

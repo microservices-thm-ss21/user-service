@@ -22,8 +22,8 @@ class IssueDbService(@Autowired val issueRepo: IssueRepository) {
 
     fun receiveUpdate(issueDataEvent: IssueDataEvent) {
         when (issueDataEvent.code){
-            CREATED -> issueRepo.save(Issue(issueDataEvent.id))
-            DELETED -> issueRepo.deleteById(issueDataEvent.id)
+            CREATED -> issueRepo.saveIssue(issueDataEvent.id).subscribe()
+            DELETED -> issueRepo.deleteById(issueDataEvent.id).subscribe()
             UPDATED -> {}
             else -> throw IllegalArgumentException("Unexpected code for issueDataEvent: ${issueDataEvent.code}")
         }
