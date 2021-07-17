@@ -8,6 +8,7 @@ import java.time.LocalDate
  */
 class UserDTO {
     var username: String? = null
+    val password: String? = null
     var name: String? = null
     var lastName: String? = null
     var email: String? = null

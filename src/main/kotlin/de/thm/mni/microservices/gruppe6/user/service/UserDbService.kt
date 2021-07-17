@@ -4,6 +4,7 @@ import de.thm.mni.microservices.gruppe6.lib.event.*
 import de.thm.mni.microservices.gruppe6.user.model.persistence.User
 import de.thm.mni.microservices.gruppe6.user.model.message.UserDTO
 import de.thm.mni.microservices.gruppe6.user.model.persistence.UserRepository
+import de.thm.mni.microservices.gruppe6.user.model.security.GlobalRole
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Component
@@ -59,7 +60,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<Pair<String,DomainEvent>>> {
         val eventList = ArrayList<Pair<String,DomainEvent>>()
 
-        if(this.username != userDTO.username!!){
+        if(this.username != userDTO.username!!) {
             eventList.add(
                 Pair(EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
@@ -119,7 +120,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.dateOfBirth = userDTO.dateOfBirth!!
         }
 
-        if(this.globalRole != userDTO.globalRole!!){
+        if(this.globalRole != userDTO.globalRole!!) {
             eventList.add(
                 Pair(EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
