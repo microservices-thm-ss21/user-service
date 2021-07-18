@@ -1,6 +1,6 @@
 package de.thm.mni.microservices.gruppe6.user.controller
 
-import de.thm.mni.microservices.gruppe6.user.model.persistence.User
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,5 +1,6 @@
 package de.thm.mni.microservices.gruppe6.user.model.persistence
 
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository

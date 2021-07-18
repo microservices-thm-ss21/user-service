@@ -1,5 +1,6 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
@@ -14,6 +15,8 @@ import java.util.function.Predicate
 
 @Component
 class JwtFilter(private val jwtService: ClassroomJWTService) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun jwtFilter(): AuthenticationWebFilter {
         val authManager = jwtAuthenticationManager()
@@ -31,9 +34,7 @@ class JwtFilter(private val jwtService: ClassroomJWTService) {
         Mono.create {
             val jwt = auth.credentials as String
             val user = jwtService.authorize(jwt)
-            it.success(
-                ServiceAuthentication(user, jwt)
-            )
+            it.success(ServiceAuthentication(user, jwt))
         }
     }
 

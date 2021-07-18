@@ -1,10 +1,8 @@
 package de.thm.mni.microservices.gruppe6.user.service
 
-import de.thm.mni.microservices.gruppe6.user.model.persistence.User
-import de.thm.mni.microservices.gruppe6.user.model.persistence.UserRepository
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import de.thm.mni.microservices.gruppe6.lib.event.DataEventCode.*
 import de.thm.mni.microservices.gruppe6.lib.event.IssueDataEvent
-import de.thm.mni.microservices.gruppe6.lib.event.UserDataEvent
 import de.thm.mni.microservices.gruppe6.user.model.persistence.Issue
 import de.thm.mni.microservices.gruppe6.user.model.persistence.IssueRepository
 import org.springframework.beans.factory.annotation.Autowired

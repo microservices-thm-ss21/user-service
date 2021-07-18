@@ -1,9 +1,10 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
-import de.thm.mni.microservices.gruppe6.user.model.persistence.User
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.security.Key
 import java.util.*
@@ -13,16 +14,22 @@ import java.util.*
 class ClassroomJWTService(private val jwtProperties: JWTProperties) {
 
     private val key: Key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun authorize(jwt: String): User {
-        val claims: Claims =
-            Jwts.parserBuilder()
-                .setSigningKey(key)
-                .requireSubject(jwtProperties.jwtSubject)
-                .build()
-                .parseClaimsJws(jwt)
-                .body
-        return User(claims)
+    fun authorize(jwt: String): User? {
+        return try {
+            val claims: Claims =
+                Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .requireSubject(jwtProperties.jwtSubject)
+                    .build()
+                    .parseClaimsJws(jwt)
+                    .body
+            User(claims)
+        } catch (e: Exception) {
+            logger.error("Jwt handling exception!", e)
+            null
+        }
     }
 
     fun createToken(user: User): String {

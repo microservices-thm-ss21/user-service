@@ -1,6 +1,7 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
-import de.thm.mni.microservices.gruppe6.user.model.persistence.User
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
+import de.thm.mni.microservices.gruppe6.user.model.security.GlobalRole
 import org.springframework.security.core.Authentication
 
 class ServiceAuthentication(
@@ -10,7 +11,7 @@ class ServiceAuthentication(
     private var valid: Boolean = true
 
     override fun getName() = user?.name
-    override fun getAuthorities() = user?.authorities
+    override fun getAuthorities() = mutableListOf(GlobalRole.valueOf(user?.globalRole!!))
     override fun getCredentials() = jwt
     override fun getDetails() = jwt
     override fun getPrincipal() = user

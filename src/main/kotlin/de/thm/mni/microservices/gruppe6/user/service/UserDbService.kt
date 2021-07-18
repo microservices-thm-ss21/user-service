@@ -1,10 +1,9 @@
 package de.thm.mni.microservices.gruppe6.user.service
 
 import de.thm.mni.microservices.gruppe6.lib.event.*
-import de.thm.mni.microservices.gruppe6.user.model.persistence.User
-import de.thm.mni.microservices.gruppe6.user.model.message.UserDTO
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.UserDTO
 import de.thm.mni.microservices.gruppe6.user.model.persistence.UserRepository
-import de.thm.mni.microservices.gruppe6.user.model.security.GlobalRole
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Component
