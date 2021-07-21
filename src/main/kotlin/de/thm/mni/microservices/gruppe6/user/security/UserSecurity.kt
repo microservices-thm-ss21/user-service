@@ -28,7 +28,11 @@ class UserSecurity(private val jwtFilter: JwtFilter,
                 .pathMatchers("/login")
                 .authenticated()
             .and()
-            .authorizeExchange() // Exchanges at the path below with Role GATEWAY is authorized.
+            .authorizeExchange()
+                .pathMatchers("/api/*/admin/**")
+                .hasAuthority("ADMIN")
+            .and()
+            .authorizeExchange()
                 .pathMatchers("/api/**")
                 .authenticated()
             .and()

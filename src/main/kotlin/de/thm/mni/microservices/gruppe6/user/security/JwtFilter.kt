@@ -6,6 +6,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
@@ -22,9 +23,15 @@ class JwtFilter(private val jwtService: ClassroomJWTService) {
         val authManager = jwtAuthenticationManager()
         val jwtFilter = AuthenticationWebFilter(authManager)
         jwtFilter.setRequiresAuthenticationMatcher(
-            ServerWebExchangeMatchers.pathMatchers(
-                "/api/**"
-            ))
+            ServerWebExchangeMatchers.matchers(ServerWebExchangeMatcher {
+                logger.info(it.request.uri.path)
+                if (it.request.uri.path == "/login") {
+                    ServerWebExchangeMatcher.MatchResult.notMatch()
+                } else {
+                    ServerWebExchangeMatcher.MatchResult.match()
+                }
+            })
+        )
 
         jwtFilter.setServerAuthenticationConverter(JWTAuthenticationConverter())
         return jwtFilter

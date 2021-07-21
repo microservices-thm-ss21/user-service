@@ -1,7 +1,7 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.GlobalRole
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
-import de.thm.mni.microservices.gruppe6.user.model.security.GlobalRole
 import org.springframework.security.core.Authentication
 
 class ServiceAuthentication(
