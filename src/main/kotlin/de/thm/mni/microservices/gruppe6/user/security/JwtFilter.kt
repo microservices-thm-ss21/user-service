@@ -15,7 +15,7 @@ import reactor.kotlin.core.publisher.toMono
 import java.util.function.Predicate
 
 @Component
-class JwtFilter(private val jwtService: ClassroomJWTService) {
+class JwtFilter(private val jwtService: JwtService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 

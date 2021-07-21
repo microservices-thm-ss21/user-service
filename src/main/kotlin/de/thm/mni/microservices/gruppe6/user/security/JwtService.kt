@@ -11,7 +11,7 @@ import java.util.*
 
 
 @Component
-class ClassroomJWTService(private val jwtProperties: JWTProperties) {
+class JwtService(private val jwtProperties: JWTProperties) {
 
     private val key: Key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     private val logger = LoggerFactory.getLogger(this::class.java)

@@ -13,7 +13,7 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 
 @Configuration
 class BasicAuthFilter(private val userDetailsService: ReactiveUserDetailsService,
-                      private val jwtService: ClassroomJWTService) {
+                      private val jwtService: JwtService) {
 
     @Bean
     fun basicAuthenticationFilter(): AuthenticationWebFilter {
