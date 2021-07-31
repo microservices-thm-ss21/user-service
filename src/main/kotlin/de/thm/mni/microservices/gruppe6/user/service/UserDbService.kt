@@ -1,10 +1,13 @@
 package de.thm.mni.microservices.gruppe6.user.service
 
-import de.thm.mni.microservices.gruppe6.lib.event.*
+import de.thm.mni.microservices.gruppe6.lib.classes.userService.GlobalRole
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.UserDTO
+import de.thm.mni.microservices.gruppe6.lib.event.*
+import de.thm.mni.microservices.gruppe6.lib.exception.ServiceException
 import de.thm.mni.microservices.gruppe6.user.model.persistence.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
@@ -21,117 +24,155 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
         return userRepo.findById(userId)
     }
 
-    fun createUser(userDTO: UserDTO): Mono<User> {
-        return Mono.just(userDTO).map { User(it) }.flatMap { userRepo.save(it) }
+    fun createUser(requester: User, userDTO: UserDTO): Mono<User> {
+        return Mono.just(checkGlobalHardPermission(requester))
+            .filter { it }
+            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
+            .map { User(userDTO) }
+            .flatMap { userRepo.save(it) }
             .publishOn(Schedulers.boundedElastic()).map {
                 sender.convertAndSend(
                     EventTopic.DataEvents.topic,
-                    UserDataEvent(DataEventCode.CREATED, it.id!!))
+                    UserDataEvent(DataEventCode.CREATED, it.id!!)
+                )
                 it
             }
     }
 
-    fun updateUser(userId: UUID, userDTO: UserDTO): Mono<User> {
-        return userRepo.findById(userId)
+    fun updateUser(requester: User, userId: UUID, userDTO: UserDTO): Mono<User> {
+        return Mono.just(checkGlobalHardPermission(requester))
+            .filter { it }
+            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
+            .flatMap { userRepo.findById(userId) }
             .map { it.applyUserDTO(userDTO) }
-            .map { userRepo.save(it.first)
-                it
+            .flatMap {
+                userRepo.save(it.first).map { user ->
+                    Pair(user, it.second)
+                }
             }
             .publishOn(Schedulers.boundedElastic()).map {
                 sender.convertAndSend(
                     EventTopic.DataEvents.topic,
-                    UserDataEvent(DataEventCode.UPDATED, userId))
-                it.second.forEach {(topic, event) -> sender.convertAndSend(topic, event) }
+                    UserDataEvent(DataEventCode.UPDATED, userId)
+                )
+                it.second.forEach { (topic, event) -> sender.convertAndSend(topic, event) }
                 it.first
             }
     }
 
-    fun deleteUser(userId: UUID): Mono<Void> {
-        return userRepo.deleteById(userId)
-            .publishOn(Schedulers.boundedElastic()).map {
+    fun deleteUser(requester: User, userId: UUID): Mono<Void> {
+        return Mono.just(checkGlobalHardPermission(requester))
+            .filter { it }
+            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
+            .flatMap { userRepo.deleteById(userId)}
+            .publishOn(Schedulers.boundedElastic())
+            .map {
                 sender.convertAndSend(
                     EventTopic.DataEvents.topic,
-                    UserDataEvent(DataEventCode.DELETED, userId))
+                    UserDataEvent(DataEventCode.DELETED, userId)
+                )
                 it
             }
     }
 
-    fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<Pair<String,DomainEvent>>> {
-        val eventList = ArrayList<Pair<String,DomainEvent>>()
+    fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<Pair<String, DomainEvent>>> {
+        val eventList = ArrayList<Pair<String, DomainEvent>>()
 
-        if(this.username != userDTO.username!!) {
+        if (this.username != userDTO.username!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
                         DomainEventCode.USER_CHANGED_USERNAME,
                         this.id!!,
                         this.username,
-                        userDTO.username))
+                        userDTO.username
+                    )
+                )
             )
             this.username = userDTO.username!!
         }
 
-        if(this.lastName != userDTO.lastName!!){
+        if (this.lastName != userDTO.lastName!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
                         DomainEventCode.USER_CHANGED_LASTNAME,
                         this.id!!,
                         this.lastName,
-                        userDTO.lastName))
+                        userDTO.lastName
+                    )
+                )
             )
             this.lastName = userDTO.lastName!!
         }
 
-        if(this.name != userDTO.name!!){
+        if (this.name != userDTO.name!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
                         DomainEventCode.USER_CHANGED_NAME,
                         this.id!!,
                         this.name,
-                        userDTO.name))
+                        userDTO.name
+                    )
+                )
             )
             this.name = userDTO.name!!
         }
 
-        if(this.email != userDTO.email!!){
+        if (this.email != userDTO.email!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
                         DomainEventCode.USER_CHANGED_EMAIL,
                         this.id!!,
                         this.email,
-                        userDTO.email))
+                        userDTO.email
+                    )
+                )
             )
             this.email = userDTO.email!!
         }
 
-        if(this.dateOfBirth != userDTO.dateOfBirth!!){
+        if (this.dateOfBirth != userDTO.dateOfBirth!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedDate(
                         DomainEventCode.USER_CHANGED_DATEOFBIRTH,
                         this.id!!,
                         this.dateOfBirth,
-                        userDTO.dateOfBirth))
+                        userDTO.dateOfBirth
+                    )
+                )
             )
             this.dateOfBirth = userDTO.dateOfBirth!!
         }
 
-        if(this.globalRole != userDTO.globalRole!!) {
+        if (this.globalRole != userDTO.globalRole!!) {
             eventList.add(
-                Pair(EventTopic.DomainEvents_UserService.topic,
+                Pair(
+                    EventTopic.DomainEvents_UserService.topic,
                     DomainEventChangedString(
                         DomainEventCode.USER_CHANGED_GLOBALROLE,
                         this.id!!,
                         this.globalRole,
-                        userDTO.globalRole))
+                        userDTO.globalRole
+                    )
+                )
             )
             this.globalRole = userDTO.globalRole!!
         }
 
         return Pair(this, eventList)
+    }
+
+    fun checkGlobalHardPermission(user: User): Boolean {
+        return user.globalRole == GlobalRole.ADMIN.name
     }
 
 }
