@@ -153,7 +153,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.dateOfBirth = userDTO.dateOfBirth!!
         }
 
-        if (this.globalRole != userDTO.globalRole!!) {
+        if (this.globalRole != userDTO.globalRole!!.name) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -161,11 +161,11 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
                         DomainEventCode.USER_CHANGED_GLOBALROLE,
                         this.id!!,
                         this.globalRole,
-                        userDTO.globalRole
+                        userDTO.globalRole!!.name
                     )
                 )
             )
-            this.globalRole = userDTO.globalRole!!
+            this.globalRole = userDTO.globalRole!!.name
         }
 
         return Pair(this, eventList)
