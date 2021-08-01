@@ -24,6 +24,7 @@ create table users (
 
 insert into issues values ('a3974d24-5735-410c-b109-ad262755d4d3');
 insert into projects values ('54ed2c8e-054d-4fb0-81ac-d7ed726b1879');
+-- the following users all have the password "password" hashed to "{bcrypt}$2a$10$t.3KubtyXsOEO9.eoWRzTOZMMTuiPvLrhSe9YFzgzV2J8kVtIOiLa"
 insert into users values ('a443ffd0-f7a8-44f6-8ad3-87acd1e91042', 'Peter_Zwegat', '{bcrypt}$2a$10$t.3KubtyXsOEO9.eoWRzTOZMMTuiPvLrhSe9YFzgzV2J8kVtIOiLa', 'Peter', 'Zwegat', 'peter.zwegat@mni.thm.de', current_date, current_timestamp, 'ADMIN', current_timestamp);
 insert into users values ('a443ffd0-f7a8-44f6-8ad3-87acd1e91043', 'Kim-Jong-Dos', '{bcrypt}$2a$10$t.3KubtyXsOEO9.eoWRzTOZMMTuiPvLrhSe9YFzgzV2J8kVtIOiLa', 'Kim', 'Jong-Dos', 'kim@nord-korea.com', current_date, current_timestamp, 'USER', current_timestamp);
 insert into users values ('a443ffd0-f7a8-44f6-8ad3-87acd1e91044', 'Kim-Jong-On', '{bcrypt}$2a$10$t.3KubtyXsOEO9.eoWRzTOZMMTuiPvLrhSe9YFzgzV2J8kVtIOiLa', 'Kim', 'Jong-On', 'lil-kim@nord-korea.com', current_date, current_timestamp, 'USER', current_timestamp)
