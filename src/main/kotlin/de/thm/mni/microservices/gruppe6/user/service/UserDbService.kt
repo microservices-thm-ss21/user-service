@@ -27,7 +27,13 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun createUser(requester: User, userDTO: UserDTO): Mono<User> {
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
+            .switchIfEmpty(
+                Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user."))
+            )
+            .filter { validateUserDTONotNull(userDTO) }
+            .switchIfEmpty(
+                Mono.error(ServiceException(HttpStatus.BAD_REQUEST, "Request Body was not complete"))
+            )
             .map { User(userDTO) }
             .flatMap { userRepo.save(it) }
             .publishOn(Schedulers.boundedElastic()).map {
@@ -42,7 +48,14 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun updateUser(requester: User, userId: UUID, userDTO: UserDTO): Mono<User> {
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
+            .switchIfEmpty(
+                Mono.error(
+                    ServiceException(
+                        HttpStatus.FORBIDDEN,
+                        "You have no permissions to create a user."
+                    )
+                )
+            )
             .flatMap { userRepo.findById(userId) }
             .map { it.applyUserDTO(userDTO) }
             .flatMap {
@@ -63,8 +76,15 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun deleteUser(requester: User, userId: UUID): Mono<Void> {
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")))
-            .flatMap { userRepo.deleteById(userId)}
+            .switchIfEmpty(
+                Mono.error(
+                    ServiceException(
+                        HttpStatus.FORBIDDEN,
+                        "You have no permissions to create a user."
+                    )
+                )
+            )
+            .flatMap { userRepo.deleteById(userId) }
             .publishOn(Schedulers.boundedElastic())
             .map {
                 sender.convertAndSend(
@@ -78,7 +98,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     fun User.applyUserDTO(userDTO: UserDTO): Pair<User, List<Pair<String, DomainEvent>>> {
         val eventList = ArrayList<Pair<String, DomainEvent>>()
 
-        if (this.username != userDTO.username!!) {
+        if (userDTO.username != null && this.username != userDTO.username!!) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -93,7 +113,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.username = userDTO.username!!
         }
 
-        if (this.lastName != userDTO.lastName!!) {
+        if (userDTO.lastName != null && this.lastName != userDTO.lastName!!) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -108,7 +128,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.lastName = userDTO.lastName!!
         }
 
-        if (this.name != userDTO.name!!) {
+        if (userDTO.name != null && this.name != userDTO.name!!) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -123,7 +143,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.name = userDTO.name!!
         }
 
-        if (this.email != userDTO.email!!) {
+        if (userDTO.email != null && this.email != userDTO.email!!) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -138,7 +158,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.email = userDTO.email!!
         }
 
-        if (this.dateOfBirth != userDTO.dateOfBirth!!) {
+        if (userDTO.dateOfBirth != null && this.dateOfBirth != userDTO.dateOfBirth!!) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -153,7 +173,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             this.dateOfBirth = userDTO.dateOfBirth!!
         }
 
-        if (this.globalRole != userDTO.globalRole!!.name) {
+        if (userDTO.globalRole != null && this.globalRole != userDTO.globalRole!!.name) {
             eventList.add(
                 Pair(
                     EventTopic.DomainEvents_UserService.topic,
@@ -175,4 +195,8 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
         return user.globalRole == GlobalRole.ADMIN.name
     }
 
+    fun validateUserDTONotNull(userDTO: UserDTO): Boolean {
+        return userDTO.dateOfBirth != null && userDTO.email != null && userDTO.globalRole != null
+                && userDTO.lastName != null && userDTO.name != null && userDTO.password != null && userDTO.username != null
+    }
 }
