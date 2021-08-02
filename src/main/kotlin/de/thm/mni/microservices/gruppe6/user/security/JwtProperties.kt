@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConfigurationProperties(prefix = "jwt")
 @ConstructorBinding
-data class JWTProperties(
+data class JwtProperties(
 
     /**
      * Secret for JWT signature
