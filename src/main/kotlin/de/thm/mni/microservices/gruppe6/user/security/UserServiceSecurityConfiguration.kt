@@ -11,8 +11,8 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 
 @EnableWebFluxSecurity
 @Configuration
-class UserSecurity(private val jwtFilter: JwtFilter,
-                   private val basicAuthenticationFilter: AuthenticationWebFilter) {
+class UserServiceSecurityConfiguration(private val jwtFilter: JwtFilter,
+                                       private val basicAuthenticationFilter: AuthenticationWebFilter) {
 
 
     @Bean
