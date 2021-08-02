@@ -6,6 +6,7 @@ import de.thm.mni.microservices.gruppe6.lib.classes.userService.UserDTO
 import de.thm.mni.microservices.gruppe6.lib.event.*
 import de.thm.mni.microservices.gruppe6.lib.exception.ServiceException
 import de.thm.mni.microservices.gruppe6.user.model.persistence.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.jms.core.JmsTemplate
@@ -18,13 +19,20 @@ import java.util.*
 @Component
 class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val sender: JmsTemplate) {
 
-    fun getAllUsers(): Flux<User> = userRepo.findAll()
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    fun getAllUsers(): Flux<User> {
+        logger.debug("getAllUsers ")
+        return userRepo.findAll()
+    }
 
     fun getUser(userId: UUID): Mono<User> {
+        logger.debug("getUser $userId ")
         return userRepo.findById(userId)
     }
 
     fun createUser(requester: User, userDTO: UserDTO): Mono<User> {
+        logger.debug("createUser $requester $userDTO")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
             .switchIfEmpty(
@@ -46,6 +54,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     }
 
     fun updateUser(requester: User, userId: UUID, userDTO: UserDTO): Mono<User> {
+        logger.debug("updateUser $requester $userId $userDTO ")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
             .switchIfEmpty(
@@ -74,6 +83,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     }
 
     fun deleteUser(requester: User, userId: UUID): Mono<Void> {
+        logger.debug("deleteUser $requester $userId ")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
             .switchIfEmpty(
@@ -192,10 +202,12 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
     }
 
     fun checkGlobalHardPermission(user: User): Boolean {
+        logger.debug("checkGlobalHardPermission $user ")
         return user.globalRole == GlobalRole.ADMIN.name
     }
 
     fun validateUserDTONotNull(userDTO: UserDTO): Boolean {
+        logger.debug("validateUserDTONotNull $userDTO ")
         return userDTO.dateOfBirth != null && userDTO.email != null && userDTO.globalRole != null
                 && userDTO.lastName != null && userDTO.name != null && userDTO.password != null && userDTO.username != null
     }

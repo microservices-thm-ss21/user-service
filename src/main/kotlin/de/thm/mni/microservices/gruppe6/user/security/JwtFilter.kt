@@ -24,7 +24,6 @@ class JwtFilter(private val jwtService: JwtService) {
         val jwtFilter = AuthenticationWebFilter(authManager)
         jwtFilter.setRequiresAuthenticationMatcher(
             ServerWebExchangeMatchers.matchers(ServerWebExchangeMatcher {
-                logger.info(it.request.uri.path)
                 if (it.request.uri.path == "/login") {
                     ServerWebExchangeMatcher.MatchResult.notMatch()
                 } else {
