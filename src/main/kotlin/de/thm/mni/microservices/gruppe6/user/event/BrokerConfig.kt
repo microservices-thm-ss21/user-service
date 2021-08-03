@@ -21,6 +21,8 @@ class BrokerConfig{
         factory.setPubSubDomain(true)
         factory.setConnectionFactory(activeMQConnectionFactory)
         factory.setMessageConverter(jacksonJmsMessageConverter())
+        factory.setSubscriptionDurable(true)
+        factory.setClientId("user-service")
         return factory
     }
 
@@ -30,6 +32,7 @@ class BrokerConfig{
         jmsTemplate.connectionFactory = activeMQConnectionFactory
         jmsTemplate.isPubSubDomain = true
         jmsTemplate.defaultDestinationName = "microservices.events"
+        jmsTemplate.setDeliveryPersistent(true)
         return jmsTemplate
     }
 

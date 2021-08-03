@@ -28,7 +28,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
 
     fun getUser(userId: UUID): Mono<User> {
         logger.debug("getUser $userId ")
-        return userRepo.findById(userId)
+        return userRepo.findById(userId).switchIfEmpty(Mono.error(ServiceException(HttpStatus.NOT_FOUND)))
     }
 
     fun createUser(requester: User, userDTO: UserDTO): Mono<User> {
@@ -61,7 +61,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
                 Mono.error(
                     ServiceException(
                         HttpStatus.FORBIDDEN,
-                        "You have no permissions to create a user."
+                        "You have no permissions to update a user."
                     )
                 )
             )
@@ -82,7 +82,7 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
             }
     }
 
-    fun deleteUser(requester: User, userId: UUID): Mono<Void> {
+    fun deleteUser(requester: User, userId: UUID): Mono<UUID> {
         logger.debug("deleteUser $requester $userId ")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
@@ -90,11 +90,17 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
                 Mono.error(
                     ServiceException(
                         HttpStatus.FORBIDDEN,
-                        "You have no permissions to create a user."
+                        "You have no permissions to delete a user."
                     )
                 )
             )
-            .flatMap { userRepo.deleteById(userId) }
+            .flatMap {
+                userRepo.existsById(userId)
+                        .filter { it }
+                        .flatMap { userRepo.deleteById(userId).thenReturn(userId)  }
+                        .switchIfEmpty(Mono.error(ServiceException(HttpStatus.NOT_FOUND, "User does not exist")))
+
+            }
             .publishOn(Schedulers.boundedElastic())
             .map {
                 sender.convertAndSend(
