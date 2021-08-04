@@ -4,17 +4,36 @@ info:
   description: API Specification for User-Service
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8083/api/users'
+  - url: 'http://localhost:8083'
 tags:
   - name: Users
     description: Users saved within the user service
 paths:
-  /:
+  /login:
+    get:
+      description: Login to the system
+      tags:
+        - Login
+      security:
+        - basicAuth: [ ]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfProjects'
+        '401':
+          $ref: '#/components/responses/LoginUnauthorizedError'
+
+  /api/users/:
     get:
       description: |
         Returns all Users saved within the user service
       tags:
         - Users
+      security:
+        - bearerAuth: [ ]
       responses:
         '200':
           description: List of Users
@@ -22,6 +41,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArrayOfUsers'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         default:
           description: unexpected error
           content:
@@ -33,6 +54,8 @@ paths:
       description: Creates a new User
       tags:
         - Users
+      security:
+        - bearerAuth: [ ]
       requestBody:
         description: userDTO
         required: true
@@ -47,8 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '409':
-          description: Conflict while creating User
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         default:
           description: unexpected error
           content:
@@ -56,13 +79,15 @@ paths:
               schema:
                 type: string
 
-  /{id}:
+  /api/users/{userId}:
     get:
-      description: Get user of the given id
+      description: Get user with the given userId
       tags:
         - Users
+      security:
+        - bearerAuth: [ ]
       parameters:
-        - name: id
+        - name: userId
           in: path
           description: ID of user
           required: true
@@ -77,6 +102,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: user not found
         default:
@@ -87,11 +114,13 @@ paths:
                 type: string
 
     put:
-      description: Update user of the given id
+      description: Update user with the given userId
       tags:
         - Users
+      security:
+        - bearerAuth: [ ]
       parameters:
-        - name: id
+        - name: userId
           in: path
           description: ID of user
           required: true
@@ -113,6 +142,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Requester does not have correct access rights.
         '409':
           description: Conflict while updating User
         default:
@@ -126,6 +159,8 @@ paths:
       description: Delete user of the given id
       tags:
         - Users
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -138,6 +173,10 @@ paths:
       responses:
         '204':
           description: Successfully deleted user
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Requester does not have correct access rights.
         default:
           description: unexpected error
           content:
@@ -146,6 +185,23 @@ paths:
                 type: string
 
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+    LoginUnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
   schemas:
     User:
       type: object
