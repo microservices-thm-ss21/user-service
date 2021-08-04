@@ -4,7 +4,7 @@ info:
   description: API Specification for User-Service
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8083'
+  - url: 'http://localhost:8069'
 tags:
   - name: Users
     description: Users saved within the user service
