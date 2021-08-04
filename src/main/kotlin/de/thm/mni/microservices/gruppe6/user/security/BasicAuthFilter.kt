@@ -12,8 +12,10 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 
 @Configuration
-class BasicAuthFilter(private val userDetailsService: ReactiveUserDetailsService,
-                      private val jwtService: JwtService) {
+class BasicAuthFilter(
+    private val userDetailsService: ReactiveUserDetailsService,
+    private val jwtService: JwtService
+) {
 
     @Bean
     fun basicAuthenticationFilter(): AuthenticationWebFilter {
@@ -32,8 +34,7 @@ class BasicAuthFilter(private val userDetailsService: ReactiveUserDetailsService
             return "Bearer $jwt"
         }
 
-        return ServerAuthenticationSuccessHandler {
-                webFilterExchange, authentication ->
+        return ServerAuthenticationSuccessHandler { webFilterExchange, authentication ->
             val exchange = webFilterExchange.exchange
             exchange.response
                 .headers

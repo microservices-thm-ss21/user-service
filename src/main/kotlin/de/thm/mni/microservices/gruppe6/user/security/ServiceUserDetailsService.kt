@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
 @Component
-class ServiceUserDetailsService(private val userRepository: UserRepository):
+class ServiceUserDetailsService(private val userRepository: UserRepository) :
     ReactiveUserDetailsService {
 
     override fun findByUsername(username: String): Mono<UserDetails> {

@@ -44,7 +44,7 @@ class JwtFilter(private val jwtService: JwtService) {
         }
     }
 
-    class JWTAuthenticationConverter: ServerAuthenticationConverter {
+    class JWTAuthenticationConverter : ServerAuthenticationConverter {
         private val bearer = "Bearer "
         private val matchBearerLength = Predicate { authValue: String -> authValue.length > bearer.length }
         private fun isolateBearerValue(authValue: String) = Mono.just(

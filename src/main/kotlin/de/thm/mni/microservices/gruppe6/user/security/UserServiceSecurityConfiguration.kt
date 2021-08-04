@@ -11,8 +11,10 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 
 @EnableWebFluxSecurity
 @Configuration
-class UserServiceSecurityConfiguration(private val jwtFilter: JwtFilter,
-                                       private val basicAuthenticationFilter: AuthenticationWebFilter) {
+class UserServiceSecurityConfiguration(
+    private val jwtFilter: JwtFilter,
+    private val basicAuthenticationFilter: AuthenticationWebFilter
+) {
 
 
     @Bean
@@ -25,16 +27,16 @@ class UserServiceSecurityConfiguration(private val jwtFilter: JwtFilter,
             .addFilterAt(jwtFilter.jwtFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
 
             .authorizeExchange()
-                .pathMatchers("/login")
-                .authenticated()
+            .pathMatchers("/login")
+            .authenticated()
             .and()
             .authorizeExchange()
-                .pathMatchers("/api/*/admin/**")
-                .hasAuthority("ADMIN")
+            .pathMatchers("/api/*/admin/**")
+            .hasAuthority("ADMIN")
             .and()
             .authorizeExchange()
-                .pathMatchers("/api/**")
-                .authenticated()
+            .pathMatchers("/api/**")
+            .authenticated()
             .and()
             .build()
     }

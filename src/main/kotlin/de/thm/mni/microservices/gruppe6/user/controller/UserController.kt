@@ -2,7 +2,6 @@ package de.thm.mni.microservices.gruppe6.user.controller
 
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.UserDTO
-import de.thm.mni.microservices.gruppe6.lib.exception.ServiceException
 import de.thm.mni.microservices.gruppe6.lib.exception.coverUnexpectedException
 import de.thm.mni.microservices.gruppe6.user.security.ServiceAuthentication
 import de.thm.mni.microservices.gruppe6.user.service.UserDbService
@@ -12,8 +11,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 @RestController
@@ -31,7 +28,7 @@ class UserController(@Autowired val userService: UserDbService) {
     fun createUser(@RequestBody userDTO: UserDTO, auth: ServiceAuthentication): Mono<User> {
         logger.debug("createUser $userDTO")
         return userService.createUser(auth.user!!, userDTO)
-                .onErrorResume { Mono.error(coverUnexpectedException(it)) }
+            .onErrorResume { Mono.error(coverUnexpectedException(it)) }
     }
 
     @GetMapping("{userId}")
@@ -44,7 +41,7 @@ class UserController(@Autowired val userService: UserDbService) {
     fun updateUser(@PathVariable userId: UUID, @RequestBody userDTO: UserDTO, auth: ServiceAuthentication): Mono<User> {
         logger.debug("updateUser $userId $userDTO")
         return userService.updateUser(auth.user!!, userId, userDTO)
-                .onErrorResume { Mono.error(coverUnexpectedException(it)) }
+            .onErrorResume { Mono.error(coverUnexpectedException(it)) }
     }
 
     @DeleteMapping("/{userId}")
@@ -52,7 +49,7 @@ class UserController(@Autowired val userService: UserDbService) {
     fun deleteUser(@PathVariable userId: UUID, auth: ServiceAuthentication): Mono<Void> {
         logger.debug("deleteUser $userId")
         return userService.deleteUser(auth.user!!, userId)
-                .onErrorResume { Mono.error(coverUnexpectedException(it)) }
-                .flatMap { Mono.empty() }
+            .onErrorResume { Mono.error(coverUnexpectedException(it)) }
+            .flatMap { Mono.empty() }
     }
 }
