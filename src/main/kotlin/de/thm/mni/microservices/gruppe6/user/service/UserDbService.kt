@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.util.*
 
 /**
@@ -55,13 +56,9 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
         logger.debug("createUser $requester $userDTO")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(
-                Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user."))
-            )
+            .switchIfEmpty { Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")) }
             .filter { validateUserDTONotNull(userDTO) }
-            .switchIfEmpty(
-                Mono.error(ServiceException(HttpStatus.BAD_REQUEST, "Request Body was not complete"))
-            )
+            .switchIfEmpty { Mono.error(ServiceException(HttpStatus.BAD_REQUEST, "Request Body was not complete")) }
             .map { User(userDTO) }
             .flatMap { userRepo.save(it) }
             .publishOn(Schedulers.boundedElastic()).map {
@@ -79,22 +76,26 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
      * @param requester
      * @param userId of the user that should be updates
      * @param userDTO holding all necessary user info
-     * @throws ServiceException when requester does not have right permissions .
+     * @throws ServiceException when requester does not have right permissions or the dto is not complete
+     * or user does not exist.
      * @return updated user
      */
     fun updateUser(requester: User, userId: UUID, userDTO: UserDTO): Mono<User> {
         logger.debug("updateUser $requester $userId $userDTO ")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(
+            .switchIfEmpty {
                 Mono.error(
-                    ServiceException(
-                        HttpStatus.FORBIDDEN,
-                        "You have no permissions to update a user."
-                    )
+                        ServiceException(
+                                HttpStatus.FORBIDDEN,
+                                "You have no permissions to update a user."
+                        )
                 )
-            )
+            }
+            .filter { validateUserDTONotNull(userDTO) }
+            .switchIfEmpty { Mono.error(ServiceException(HttpStatus.BAD_REQUEST, "Request Body was not complete")) }
             .flatMap { userRepo.findById(userId) }
+            .switchIfEmpty { Mono.error(ServiceException(HttpStatus.NOT_FOUND)) }
             .map { it.applyUserDTO(userDTO) }
             .flatMap {
                 userRepo.save(it.first).map { user ->
@@ -124,19 +125,19 @@ class UserDbService(@Autowired val userRepo: UserRepository, @Autowired val send
         logger.debug("deleteUser $requester $userId ")
         return Mono.just(checkGlobalHardPermission(requester))
             .filter { it }
-            .switchIfEmpty(
+            .switchIfEmpty {
                 Mono.error(
-                    ServiceException(
-                        HttpStatus.FORBIDDEN,
-                        "You have no permissions to delete a user."
-                    )
+                        ServiceException(
+                                HttpStatus.FORBIDDEN,
+                                "You have no permissions to delete a user."
+                        )
                 )
-            )
+            }
             .flatMap {
                 userRepo.existsById(userId)
                     .filter { it }
                     .flatMap { userRepo.deleteById(userId).thenReturn(userId) }
-                    .switchIfEmpty(Mono.error(ServiceException(HttpStatus.NOT_FOUND, "User does not exist")))
+                    .switchIfEmpty{ Mono.error(ServiceException(HttpStatus.NOT_FOUND, "User does not exist")) }
 
             }
             .publishOn(Schedulers.boundedElastic())
