@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
@@ -24,7 +25,8 @@ import java.util.*
 @Component
 class UserDbService(@Autowired val userRepo: UserRepository,
                     @Autowired val sender: JmsTemplate,
-                    @Autowired val passwordEncoder: PasswordEncoder) {
+                    @Autowired val passwordEncoder: PasswordEncoder
+) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -62,7 +64,9 @@ class UserDbService(@Autowired val userRepo: UserRepository,
             .switchIfEmpty { Mono.error(ServiceException(HttpStatus.FORBIDDEN, "You have no permissions to create a user.")) }
             .filter { validateUserDTONotNull(userDTO) }
             .switchIfEmpty { Mono.error(ServiceException(HttpStatus.BAD_REQUEST, "Request Body was not complete")) }
-            .map { User(userDTO) }
+            .map {
+
+                User(userDTO) }
             .map { it.apply { password = passwordEncoder.encode(password) }            }
             .flatMap { userRepo.save(it) }
             .publishOn(Schedulers.boundedElastic()).map {
