@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 
@@ -25,7 +26,6 @@ class UserServiceSecurityConfiguration(
             .logout().disable()
             .addFilterAt(basicAuthenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)
             .addFilterAt(jwtFilter.jwtFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-
             .authorizeExchange()
             .pathMatchers("/login")
             .authenticated()
@@ -42,7 +42,7 @@ class UserServiceSecurityConfiguration(
     }
 
     @Bean
-    fun getPasswordEncoder(): BCryptPasswordEncoder {
+    fun getPasswordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 

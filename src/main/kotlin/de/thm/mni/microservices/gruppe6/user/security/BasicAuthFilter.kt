@@ -29,14 +29,6 @@ class BasicAuthFilter(
         val basicAuthenticationFilter = AuthenticationWebFilter(authManager)
         basicAuthenticationFilter.setAuthenticationFailureHandler { webFilterExchange, _ ->
             val exchange = webFilterExchange.exchange
-            /*logger.debug(exchange.request.headers[HttpHeaders.AUTHORIZATION]!!.first())
-            logger.debug(
-                Base64.getDecoder()
-                    .decode(exchange.request.headers[HttpHeaders.AUTHORIZATION]!!.first())
-                    .contentToString()
-            )
-
-             */
             webFilterExchange.chain.filter(exchange)
         }
         basicAuthenticationFilter.setAuthenticationSuccessHandler(basicAuthSuccessHandler())

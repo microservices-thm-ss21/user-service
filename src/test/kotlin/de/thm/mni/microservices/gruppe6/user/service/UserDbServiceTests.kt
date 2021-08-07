@@ -13,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDate
@@ -22,10 +23,11 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 class UserDbServiceTests(
     @Mock private val userRepository: UserRepository,
-    @Mock private val sender: JmsTemplate,
+    @Mock private val sender: JmsTemplate
 ) {
 
-    private val userService = UserDbService(userRepository, sender)
+    private val passwordEncoder = BCryptPasswordEncoder()
+    private val userService = UserDbService(userRepository, sender, passwordEncoder)
 
     private fun createUser(username: String, password: String, name: String, lastName: String, email: String, globalRole: GlobalRole): User {
         return User(UUID.randomUUID(), username, password, name, lastName, email, LocalDate.now(), LocalDateTime.now(), globalRole.name, LocalDateTime.now())
