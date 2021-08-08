@@ -1,5 +1,6 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
+import de.thm.mni.microservices.gruppe6.lib.classes.authentication.ServiceAuthentication
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.ReactiveAuthenticationManager

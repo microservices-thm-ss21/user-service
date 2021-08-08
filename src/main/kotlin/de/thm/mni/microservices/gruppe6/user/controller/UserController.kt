@@ -1,9 +1,9 @@
 package de.thm.mni.microservices.gruppe6.user.controller
 
+import de.thm.mni.microservices.gruppe6.lib.classes.authentication.ServiceAuthentication
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.User
 import de.thm.mni.microservices.gruppe6.lib.classes.userService.UserDTO
 import de.thm.mni.microservices.gruppe6.lib.exception.coverUnexpectedException
-import de.thm.mni.microservices.gruppe6.user.security.ServiceAuthentication
 import de.thm.mni.microservices.gruppe6.user.service.UserDbService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

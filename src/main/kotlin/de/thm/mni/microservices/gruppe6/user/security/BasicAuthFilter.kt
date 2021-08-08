@@ -8,12 +8,9 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
-import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
-import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
-import java.util.*
 
 /**
  * Contains logic for HTTP-Basic authentication with a custom success handler issuing a JWT.
