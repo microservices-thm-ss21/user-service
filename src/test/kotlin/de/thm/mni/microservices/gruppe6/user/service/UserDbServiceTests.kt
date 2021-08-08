@@ -30,7 +30,7 @@ class UserDbServiceTests(
     private val userService = UserDbService(userRepository, sender, passwordEncoder)
 
     private fun createUser(username: String, password: String, name: String, lastName: String, email: String, globalRole: GlobalRole): User {
-        return User(UUID.randomUUID(), username, password, name, lastName, email, LocalDate.now(), LocalDateTime.now(), globalRole.name, LocalDateTime.now())
+        return User(UUID.randomUUID(), username, password, name, lastName, email, LocalDate.now(), LocalDateTime.now(), globalRole.name)
     }
 
     private fun createUserDTO(username: String?, password: String?, name: String?, lastName: String?, email: String?, globalRole: GlobalRole?): UserDTO {
