@@ -16,6 +16,10 @@ class JwtService(private val jwtProperties: JwtProperties) {
     private val key: Key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    /**
+     * Extracts a User from jwt.
+     * @param the jwt
+     */
     fun authorize(jwt: String): User? {
         return try {
             val claims: Claims =
@@ -32,6 +36,10 @@ class JwtService(private val jwtProperties: JwtProperties) {
         }
     }
 
+    /**
+     * creates a JWT from a user.
+     * @param user user
+     */
     fun createToken(user: User): String {
         return Jwts.builder()
             .setSubject(jwtProperties.jwtSubject)
