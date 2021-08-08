@@ -2,6 +2,20 @@
 
 Service responsible for managing users and login.
 
+== Structure
+
+* This is a closed community. You require an admin to create an account for you
+* This is the only entry-point into the microservice network via the `/login` routes. Everything else is hidden behind the authentication.
+* There are three different Global-Roles:
+** Admin: Every permission on everything including invites
+** Support: Soft-Permissions: adding a user to any project
+** User: Create project
+* We have three default users:
+** username: Peter_Zwegat, password: password, role: ADMIN
+** username: Kim-Jong-Dos, password: password, role: SUPPORT
+** username: Kim-Jong-On, password: password, role: USER
+
+
 == Tech-Stack
 The user service is based on the Spring Framework with Webflux and Netty as its HTTP-server stack and ActiveMQ connections as message broker. The service is connected to dedicated PostgreSQL database, where data is persisted.
 
@@ -11,8 +25,22 @@ The database holds all information of registered users.
 == HTTP API
 The API is documented as OpenAPI Specification in https://git.thm.de/microservicesss21/user-service/-/blob/master/user-service.yaml[user-service.yaml]
 
+To test the API please use the https://git.thm.de/microservicesss21/orga/-/blob/master/doc/Micro-Services.project_service.postman_collection.json[Postman collection].
+
 == Message-Broker / ActiveMQ
-It is sending out events whenever a user is created, updated or deleted.
+The service sends events when:
+
+1. microservices.dataEvents: +
+- User: Created, Updated or deleted
+
+2. microservices.domainEvents: +
+Extended events with additional information when:
+* The user changed its username
+* The user changed its lastname
+* The user changed its name
+* The user changed its email
+* The user changed its date of birth (lol)
+* The Global Role of a user got changed
 
 The user service is not listening to any ActiveMQ topic.
 
