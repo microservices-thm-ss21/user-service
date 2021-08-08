@@ -3,23 +3,21 @@
 Service responsible for managing users and login.
 
 == Tech-Stack
-The project service is based on the Spring Framework with Webflux and Netty as its HTTP-server stack and ActiveMQ connections as message broker. The project service is connected to dedicated PostgreSQL database, where data is persisted.
+The user service is based on the Spring Framework with Webflux and Netty as its HTTP-server stack and ActiveMQ connections as message broker. The service is connected to dedicated PostgreSQL database, where data is persisted.
 
 == Database / PostgreSQL
-The database holds all information of projects, its members - users associated with a project, and existing user ids for data integrity.
+The database holds all information of registered users.
+
+== HTTP API
+The API is documented as OpenAPI Specification in https://git.thm.de/microservicesss21/user-service/-/blob/master/user-service.yaml[user-service.yaml]
 
 == Message-Broker / ActiveMQ
-The project service is listening to two ActiveMQ topics:
+It is sending out events whenever a user is created, updated or deleted.
 
-=== microservices.dataEvents
-This service is interested in creation and deletion events for users within the system to update its local table with user ids.
-All other events are ignored.
+The user service is not listening to any ActiveMQ topic.
 
-=== microservices.sagaEvents
-This service is interested in ProjectDeleteSagaEvents containing results of other services involved in saga transactions orchestrated by this service.
-
-== Saga
-This service is the choreographer for a project deletion saga. Whenever it is requested to delete a project, it saves the data to be deleted and sends an event via "microservices.sagaEvents" - Topic. It subsequently awaits messages marking further steps ("chapters") within the saga.
+== Login
+The login to the system is realized via HTTP-Basic auth to /login. After that a JWT is issued which contains all relevant information about the user. The JWT is valid for a limited period of time. A reissue mechanism or a blacklist is not (yet) implemented.
 
 == Further Reading
 Please refer to the https://git.thm.de/microservicesss21/orga/-/blob/master/README.md[README] of the Orga-Repository for more information.
