@@ -14,7 +14,7 @@ class LoginController {
 
     @GetMapping("/login")
     fun login(auth: Authentication): Mono<Void> {
-        logger.info("${(auth.principal as User).name} logged in with password ${auth.credentials as String}!")
+        logger.debug("${(auth.principal as User).name} logged in with password ${auth.credentials as String}!")
         return Mono.empty()
     }
 
