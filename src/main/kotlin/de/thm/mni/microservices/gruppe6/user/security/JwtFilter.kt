@@ -1,5 +1,6 @@
 package de.thm.mni.microservices.gruppe6.user.security
 
+import de.thm.mni.microservices.gruppe6.lib.classes.authentication.ServiceAuthentication
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.ReactiveAuthenticationManager
@@ -14,11 +15,18 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.util.function.Predicate
 
+/**
+ * Contains logic for JWT authentication and creates a ServiceAuthentication
+ * object containing user information.
+ */
 @Component
 class JwtFilter(private val jwtService: JwtService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    /**
+     * Constructs the AuthenticationWebFilter for jwt auth.
+     */
     fun jwtFilter(): AuthenticationWebFilter {
         val authManager = jwtAuthenticationManager()
         val jwtFilter = AuthenticationWebFilter(authManager)
@@ -31,7 +39,6 @@ class JwtFilter(private val jwtService: JwtService) {
                 }
             })
         )
-
         jwtFilter.setServerAuthenticationConverter(JWTAuthenticationConverter())
         return jwtFilter
     }
@@ -44,6 +51,10 @@ class JwtFilter(private val jwtService: JwtService) {
         }
     }
 
+    /**
+     * Extracts JWT from HTTP request and creates a ServiceAuthentication.
+     * @see ServiceAuthentication
+     */
     class JWTAuthenticationConverter : ServerAuthenticationConverter {
         private val bearer = "Bearer "
         private val matchBearerLength = Predicate { authValue: String -> authValue.length > bearer.length }

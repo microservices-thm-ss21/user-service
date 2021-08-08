@@ -8,13 +8,13 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
-import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
-import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
-import java.util.*
 
+/**
+ * Contains logic for HTTP-Basic authentication with a custom success handler issuing a JWT.
+ */
 @Configuration
 class BasicAuthFilter(
     private val userDetailsService: ReactiveUserDetailsService,
@@ -23,6 +23,9 @@ class BasicAuthFilter(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    /**
+     * Constructs the AuthenticationWebFilter for basic auth with custom success handler.
+     */
     @Bean
     fun basicAuthenticationFilter(): AuthenticationWebFilter {
         val authManager = UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService)
@@ -38,6 +41,9 @@ class BasicAuthFilter(
         return basicAuthenticationFilter
     }
 
+    /**
+     * Custom auth success handler issuing a JWT as Authorization header.
+     */
     private fun basicAuthSuccessHandler(): ServerAuthenticationSuccessHandler {
         fun getHttpAuthHeaderValue(authentication: Authentication): String {
             val jwt = jwtService.createToken(authentication.principal as User)
@@ -49,12 +55,6 @@ class BasicAuthFilter(
             exchange.response
                 .headers
                 .add(HttpHeaders.AUTHORIZATION, getHttpAuthHeaderValue(authentication))
-            /*logger.debug(
-                Base64.getDecoder()
-                    .decode(exchange.request.headers[HttpHeaders.AUTHORIZATION]!!.first())
-                    .contentToString())
-
-             */
             webFilterExchange.chain.filter(exchange)
         }
     }
