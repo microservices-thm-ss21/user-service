@@ -23,7 +23,7 @@ The user service is based on the Spring Framework with Webflux and Netty as its 
 The database holds all information of registered users.
 
 == HTTP API
-The API is documented as OpenAPI Specification in https://git.thm.de/microservicesss21/orga/-/tree/master/doc/apis[user-service.yaml]
+The API is documented as https://git.thm.de/microservicesss21/orga/-/tree/master/doc/apis[OpenAPI Specification]
 
 To test the API please use the https://git.thm.de/microservicesss21/orga/-/blob/master/doc/Micro-Services.project_service.postman_collection.json[Postman collection].
 
